@@ -1,0 +1,154 @@
+[
+  {
+    "id": "luffy",
+    "nome": "Monkey D. Luffy",
+    "epiteto": "Chapéu de Palha",
+    "cargo": "Capitão",
+    "descricao": "Capitão dos Piratas do Chapéu de Palha. Luffy conduz a tripulação em sua jornada pela Grand Line com o objetivo de alcançar o One Piece e tornar-se o Rei dos Piratas.",
+    "habilidades": "Possui os poderes da Hito Hito no Mi, Modelo: Nika, que concede ao seu corpo propriedades semelhantes à borracha. Utiliza diferentes Gears em combate e domina os três tipos de Haki.",
+    "objetivo": "Encontrar o lendário One Piece, tornar-se o Rei dos Piratas e alcançar a liberdade que associa a esse título.",
+    "akuma_no_mi": {
+      "nome": "Hito Hito no Mi, Modelo: Nika",
+      "tipo": "Zoan Mítica"
+    },
+    "haki": {
+      "tipos": [
+        "Observação",
+        "Armamento",
+        "Rei"
+      ],
+      "nota": "Os três tipos são confirmados."
+    },
+    "recompensa": {
+      "valor": 3000000000,
+      "exibicao": "3.000.000.000 ฿"
+    },
+    "origem": "Vila Foosha, East Blue",
+    "aniversario": "5 de maio",
+    "imagem": "assets/personagens/luffy.jpg",
+    "logo": "assets/logos/logo_luffy.png",
+    "icone": "assets/icones/caveira_luffy.jpg",
+    "tema": {
+      "principal": "#D62828",
+      "secundaria": "#F4C542"
+    }
+  },
+  {
+    "id": "zoro",
+    "nome": "Roronoa Zoro",
+    "epiteto": "Caçador de Piratas",
+    "cargo": "Espadachim / Combatente",
+    "descricao": "Espadachim dos Piratas do Chapéu de Palha e primeiro integrante a se juntar a Luffy. É conhecido por seu estilo de luta com três espadas.",
+    "habilidades": "Mestre do Santoryu, o Estilo das Três Espadas. Combina grande força física e técnica de espada com Haki da Observação, do Armamento e do Rei.",
+    "objetivo": "Tornar-se o maior espadachim do mundo, cumprindo a promessa feita à sua amiga de infância Kuina.",
+    "akuma_no_mi": null,
+    "haki": {
+      "tipos": [
+        "Observação",
+        "Armamento",
+        "Rei"
+      ],
+      "nota": "Os três tipos são confirmados."
+    },
+    "recompensa": {
+      "valor": 1111000000,
+      "exibicao": "1.111.000.000 ฿"
+    },
+    "origem": "Vila Shimotsuki, East Blue",
+    "aniversario": "11 de novembro",
+    "imagem": "assets/personagens/zoro.jpg",
+    "logo": "assets/logos/logo_zoro.png",
+    "icone": "assets/icones/caveira_zoro.jpg",
+    "tema": {
+      "principal": "#2E8B57",
+      "secundaria": "#A7C957"
+    }
+  },
+  {
+    "id": "nami",
+    "nome": "Nami",
+    "epiteto": "Gata Ladra",
+    "cargo": "Navegadora",
+    "descricao": "Navegadora dos Piratas do Chapéu de Palha. Seu conhecimento de navegação, cartografia e meteorologia é essencial para conduzir a tripulação pelos mares.",
+    "habilidades": "Especialista em meteorologia e leitura do clima. Utiliza o Clima-Tact em combate e conta com Zeus para ampliar suas técnicas climáticas.",
+    "objetivo": "Viajar pelos mares e criar um mapa completo do mundo.",
+    "akuma_no_mi": null,
+    "haki": {
+      "tipos": [],
+      "nota": "Nenhum tipo foi incluído como confirmado nos dados desta versão."
+    },
+    "recompensa": {
+      "valor": 366000000,
+      "exibicao": "366.000.000 ฿"
+    },
+    "origem": "Vila Cocoyasi, East Blue",
+    "aniversario": "3 de julho",
+    "imagem": "assets/personagens/nami.jpg",
+    "logo": "assets/logos/logo_nami.png",
+    "icone": "assets/icones/caveira_nami.jpg",
+    "tema": {
+      "principal": "#1597C5",
+      "secundaria": "#F28C28"
+    }
+  },
+  {
+    "id": "sanji",
+    "nome": "Sanji",
+    "epiteto": "Perna Negra",
+    "cargo": "Cozinheiro",
+    "descricao": "Cozinheiro dos Piratas do Chapéu de Palha. Além de cuidar da alimentação da tripulação, é um dos principais combatentes do bando.",
+    "habilidades": "Especialista em combate com chutes e no Estilo da Perna Negra. Utiliza técnicas como Diable Jambe e Ifrit Jambe, além de Haki da Observação e do Armamento.",
+    "objetivo": "Encontrar o All Blue, o mar lendário onde se reuniriam espécies e ingredientes provenientes dos grandes mares.",
+    "akuma_no_mi": null,
+    "haki": {
+      "tipos": [
+        "Observação",
+        "Armamento"
+      ],
+      "nota": "Esses dois tipos são confirmados."
+    },
+    "recompensa": {
+      "valor": 1032000000,
+      "exibicao": "1.032.000.000 ฿"
+    },
+    "origem": "North Blue",
+    "aniversario": "2 de março",
+    "imagem": "assets/personagens/sanji.jpg",
+    "logo": "assets/logos/logo_sanji.png",
+    "icone": "assets/icones/caveira_sanji.jpg",
+    "tema": {
+      "principal": "#D4A017",
+      "secundaria": "#2C6E9E"
+    }
+  },
+  {
+    "id": "chopper",
+    "nome": "Tony Tony Chopper",
+    "epiteto": "Amante de Algodão Doce",
+    "cargo": "Médico",
+    "descricao": "Médico dos Piratas do Chapéu de Palha. Chopper é uma rena que ganhou características humanas após consumir a Hito Hito no Mi.",
+    "habilidades": "A Hito Hito no Mi permite diferentes formas de transformação. Chopper também desenvolveu a Rumble Ball para ampliar as possibilidades de sua fruta, incluindo o Monster Point.",
+    "objetivo": "Tornar-se um médico capaz de curar qualquer doença e aproximar-se do ideal de uma panaceia para qualquer enfermidade.",
+    "akuma_no_mi": {
+      "nome": "Hito Hito no Mi",
+      "tipo": "Zoan"
+    },
+    "haki": {
+      "tipos": [],
+      "nota": "Nenhum tipo foi incluído como confirmado nos dados desta versão."
+    },
+    "recompensa": {
+      "valor": 1000,
+      "exibicao": "1.000 ฿"
+    },
+    "origem": "Reino Sakura (antigo Reino de Drum), Grand Line",
+    "aniversario": "24 de dezembro",
+    "imagem": "assets/personagens/chopper.jpg",
+    "logo": "assets/logos/logo_chopper.png",
+    "icone": "assets/icones/caveira_chopper.jpg",
+    "tema": {
+      "principal": "#E86DAA",
+      "secundaria": "#64C5DA"
+    }
+  }
+]
