@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 
+from ui.info_panel import InfoPanel
 from utils.caminhos import caminho_projeto
 
 
@@ -66,6 +67,7 @@ class PersonagemView(ctk.CTkFrame):
         )
 
         self.frame_info.grid_columnconfigure(0, weight=1)
+        self.frame_info.grid_rowconfigure(6, weight=1)
 
         self.label_logo = ctk.CTkLabel(
             self.frame_info,
@@ -76,7 +78,7 @@ class PersonagemView(ctk.CTkFrame):
             column=0,
             sticky="w",
             padx=26,
-            pady=(30, 22)
+            pady=(26, 16)
         )
 
         self.barra_destaque = ctk.CTkFrame(
@@ -91,14 +93,14 @@ class PersonagemView(ctk.CTkFrame):
             column=0,
             sticky="w",
             padx=28,
-            pady=(0, 18)
+            pady=(0, 15)
         )
         self.barra_destaque.grid_propagate(False)
 
         self.label_nome = ctk.CTkLabel(
             self.frame_info,
             text="",
-            font=ctk.CTkFont(size=34, weight="bold"),
+            font=ctk.CTkFont(size=32, weight="bold"),
             text_color="#FFFFFF",
             anchor="w",
             justify="left"
@@ -113,7 +115,7 @@ class PersonagemView(ctk.CTkFrame):
         self.label_epiteto = ctk.CTkLabel(
             self.frame_info,
             text="",
-            font=ctk.CTkFont(size=16),
+            font=ctk.CTkFont(size=15),
             text_color="#9CA3AF",
             anchor="w",
             justify="left"
@@ -123,13 +125,13 @@ class PersonagemView(ctk.CTkFrame):
             column=0,
             sticky="ew",
             padx=27,
-            pady=(3, 18)
+            pady=(3, 14)
         )
 
         self.badge_cargo = ctk.CTkLabel(
             self.frame_info,
             text="",
-            height=34,
+            height=32,
             corner_radius=9,
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="#FFFFFF",
@@ -140,39 +142,16 @@ class PersonagemView(ctk.CTkFrame):
             column=0,
             sticky="w",
             padx=26,
-            pady=(0, 22)
+            pady=(0, 18)
         )
 
-        titulo_descricao = ctk.CTkLabel(
-            self.frame_info,
-            text="VISÃO GERAL",
-            font=ctk.CTkFont(size=11, weight="bold"),
-            text_color="#737B88",
-            anchor="w"
-        )
-        titulo_descricao.grid(
+        self.info_panel = InfoPanel(self.frame_info)
+        self.info_panel.grid(
             row=5,
             column=0,
-            sticky="ew",
-            padx=27,
-            pady=(0, 8)
-        )
-
-        self.label_descricao = ctk.CTkLabel(
-            self.frame_info,
-            text="",
-            font=ctk.CTkFont(size=14),
-            text_color="#D6DAE1",
-            anchor="nw",
-            justify="left",
-            wraplength=350
-        )
-        self.label_descricao.grid(
-            row=6,
-            column=0,
-            sticky="new",
-            padx=27,
-            pady=(0, 24)
+            sticky="nsew",
+            padx=22,
+            pady=(0, 18)
         )
 
         self.label_etapa = ctk.CTkLabel(
@@ -182,17 +161,15 @@ class PersonagemView(ctk.CTkFrame):
             text_color="#5F6672"
         )
         self.label_etapa.grid(
-            row=7,
+            row=6,
             column=0,
             sticky="sw",
             padx=27,
-            pady=(20, 24)
+            pady=(0, 20)
         )
 
-        self.frame_info.grid_rowconfigure(7, weight=1)
-
     @staticmethod
-    def tamanho_logo(imagem, largura_maxima=315, altura_maxima=125):
+    def tamanho_logo(imagem, largura_maxima=300, altura_maxima=110):
         largura, altura = imagem.size
 
         escala = min(
@@ -218,7 +195,9 @@ class PersonagemView(ctk.CTkFrame):
             dark_image=imagem,
             size=(665, 416)
         )
-        self.label_imagem.configure(image=self.imagem_principal)
+        self.label_imagem.configure(
+            image=self.imagem_principal
+        )
 
         logo = Image.open(
             caminho_projeto(personagem["logo"])
@@ -231,7 +210,9 @@ class PersonagemView(ctk.CTkFrame):
             dark_image=logo,
             size=tamanho_logo
         )
-        self.label_logo.configure(image=self.logo_atual)
+        self.label_logo.configure(
+            image=self.logo_atual
+        )
 
         self.label_nome.configure(
             text=personagem["nome"],
@@ -244,10 +225,8 @@ class PersonagemView(ctk.CTkFrame):
             text=f'   {personagem["cargo"]}   ',
             fg_color=cor_principal
         )
-        self.label_descricao.configure(
-            text=personagem["descricao"]
-        )
-
         self.barra_destaque.configure(
             fg_color=cor_secundaria
         )
+
+        self.info_panel.atualizar_personagem(personagem)
