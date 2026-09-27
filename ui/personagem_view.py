@@ -1,341 +1,440 @@
+import tkinter as tk
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageOps, ImageTk
 import customtkinter as ctk
-from PIL import Image, ImageEnhance, ImageOps
 
 from ui.info_panel import InfoPanel
 from utils.caminhos import caminho_projeto
 
 
 class PersonagemView(ctk.CTkFrame):
-    TAMANHO_IMAGEM = (665, 416)
+    """Hero cinematográfico do personagem."""
 
-    def __init__(self, master):
-        super().__init__(
-            master,
-            corner_radius=0,
-            fg_color="#101218"
-        )
+    TAMANHO_FALLBACK = (1050, 760)
 
-        self.imagem_principal = None
-        self.logo_atual = None
+    def __init__(self, master, total_personagens=5):
+        super().__init__(master, corner_radius=0, fg_color="#07090D")
+
+        self.total_personagens = total_personagens
+        self.personagem_atual = None
+        self.indice_atual = 0
+
+        self.imagem_original = None
+        self.logo_original = None
         self.imagem_pil_atual = None
+
+        self.background_photo = None
+        self.logo_photo = None
+        self.background_item = None
+
         self.animacao_id = 0
+        self.resize_job = None
+        self.entrada_job = None
 
-        self.grid_columnconfigure(0, weight=3)
-        self.grid_columnconfigure(1, weight=2)
-        self.grid_rowconfigure(0, weight=1)
-
-        self.criar_area_imagem()
-        self.criar_area_info()
-
-    def criar_area_imagem(self):
-        self.frame_imagem = ctk.CTkFrame(
+        self.canvas = tk.Canvas(
             self,
-            corner_radius=18,
-            fg_color="#161A22",
-            border_width=1,
-            border_color="#242B36"
+            bg="#07090D",
+            bd=0,
+            highlightthickness=0,
+            relief="flat",
         )
-        self.frame_imagem.grid(
-            row=0,
-            column=0,
-            sticky="nsew",
-            padx=(26, 12),
-            pady=26
-        )
-
-        self.label_imagem = ctk.CTkLabel(
-            self.frame_imagem,
-            text=""
-        )
-        self.label_imagem.pack(
-            expand=True,
-            fill="both",
-            padx=10,
-            pady=10
-        )
-
-    def criar_area_info(self):
-        self.frame_info = ctk.CTkFrame(
-            self,
-            corner_radius=18,
-            fg_color="#14171E",
-            border_width=1,
-            border_color="#242B36"
-        )
-        self.frame_info.grid(
-            row=0,
-            column=1,
-            sticky="nsew",
-            padx=(12, 26),
-            pady=26
-        )
-
-        self.frame_info.grid_columnconfigure(
-            0,
-            weight=1
-        )
-        self.frame_info.grid_rowconfigure(
-            6,
-            weight=1
-        )
-
-        self.label_logo = ctk.CTkLabel(
-            self.frame_info,
-            text=""
-        )
-        self.label_logo.grid(
-            row=0,
-            column=0,
-            sticky="w",
-            padx=26,
-            pady=(26, 16)
-        )
-
-        self.barra_destaque = ctk.CTkFrame(
-            self.frame_info,
-            width=54,
-            height=4,
-            corner_radius=2,
-            fg_color="#D62828"
-        )
-        self.barra_destaque.grid(
-            row=1,
-            column=0,
-            sticky="w",
-            padx=28,
-            pady=(0, 15)
-        )
-        self.barra_destaque.grid_propagate(False)
-
-        self.label_nome = ctk.CTkLabel(
-            self.frame_info,
-            text="",
-            font=ctk.CTkFont(
-                size=32,
-                weight="bold"
-            ),
-            text_color="#FFFFFF",
-            anchor="w",
-            justify="left"
-        )
-        self.label_nome.grid(
-            row=2,
-            column=0,
-            sticky="ew",
-            padx=26
-        )
-
-        self.label_epiteto = ctk.CTkLabel(
-            self.frame_info,
-            text="",
-            font=ctk.CTkFont(size=15),
-            text_color="#9CA3AF",
-            anchor="w",
-            justify="left"
-        )
-        self.label_epiteto.grid(
-            row=3,
-            column=0,
-            sticky="ew",
-            padx=27,
-            pady=(3, 14)
-        )
-
-        self.badge_cargo = ctk.CTkLabel(
-            self.frame_info,
-            text="",
-            height=32,
-            corner_radius=9,
-            font=ctk.CTkFont(
-                size=13,
-                weight="bold"
-            ),
-            text_color="#FFFFFF",
-            anchor="w"
-        )
-        self.badge_cargo.grid(
-            row=4,
-            column=0,
-            sticky="w",
-            padx=26,
-            pady=(0, 18)
-        )
+        self.canvas.pack(fill="both", expand=True)
 
         self.info_panel = InfoPanel(
-            self.frame_info
-        )
-        self.info_panel.grid(
-            row=5,
-            column=0,
-            sticky="nsew",
-            padx=22,
-            pady=(0, 18)
+            self.canvas,
+            ao_mudar=self.redesenhar_conteudo,
         )
 
-        self.label_etapa = ctk.CTkLabel(
-            self.frame_info,
-            text="V2 • interface em desenvolvimento",
-            font=ctk.CTkFont(size=11),
-            text_color="#5F6672"
-        )
-        self.label_etapa.grid(
-            row=6,
-            column=0,
-            sticky="sw",
-            padx=27,
-            pady=(0, 20)
-        )
+        self.canvas.bind("<Configure>", self.ao_redimensionar)
 
     @staticmethod
-    def tamanho_logo(
-        imagem,
-        largura_maxima=300,
-        altura_maxima=110
-    ):
-        largura, altura = imagem.size
+    def _hex_para_rgb(cor):
+        cor = cor.lstrip("#")
+        return tuple(int(cor[i:i + 2], 16) for i in (0, 2, 4))
 
-        escala = min(
-            largura_maxima / largura,
-            altura_maxima / altura
-        )
+    def tamanho_canvas(self):
+        largura = self.canvas.winfo_width()
+        altura = self.canvas.winfo_height()
 
-        return (
-            max(1, int(largura * escala)),
-            max(1, int(altura * escala))
-        )
+        if largura < 200 or altura < 200:
+            return self.TAMANHO_FALLBACK
 
-    def preparar_imagem(self, personagem):
-        imagem = Image.open(
-            caminho_projeto(
-                personagem["imagem"]
-            )
-        ).convert("RGB")
+        return largura, altura
+
+    def preparar_background(self, tamanho):
+        largura, altura = tamanho
+
+        visual = self.personagem_atual.get("visual", {})
+        foco_x = float(visual.get("foco_x", 0.56))
+        foco_y = float(visual.get("foco_y", 0.50))
+        brilho = float(visual.get("brilho", 0.80))
 
         imagem = ImageOps.fit(
-            imagem,
-            self.TAMANHO_IMAGEM,
+            self.imagem_original,
+            (largura, altura),
             method=Image.Resampling.LANCZOS,
-            centering=(0.5, 0.5)
+            centering=(foco_x, foco_y),
         )
 
-        # Um leve escurecimento deixa o visual menos estourado
-        # e combina melhor com o tema da interface.
-        return ImageEnhance.Brightness(
-            imagem
-        ).enhance(0.94)
+        imagem = ImageEnhance.Brightness(imagem).enhance(brilho)
+        imagem = ImageEnhance.Contrast(imagem).enhance(1.04)
+        imagem = ImageEnhance.Color(imagem).enhance(0.96)
+        imagem = imagem.convert("RGBA")
 
-    def aplicar_imagem(self, imagem):
-        self.imagem_principal = ctk.CTkImage(
-            light_image=imagem,
-            dark_image=imagem,
-            size=self.TAMANHO_IMAGEM
-        )
-        self.label_imagem.configure(
-            image=self.imagem_principal
-        )
+        # Escurecimento geral muito leve para unir arte e interface.
+        geral = Image.new("RGBA", imagem.size, (3, 5, 8, 28))
+        imagem = Image.alpha_composite(imagem, geral)
 
-    def animar_troca_imagem(
-        self,
-        imagem_nova
-    ):
+        # Glow temático suave atrás da arte.
+        cor_tema = self._hex_para_rgb(
+            self.personagem_atual["tema"]["principal"]
+        )
+        glow_mask = Image.new("L", imagem.size, 0)
+        glow_draw = ImageDraw.Draw(glow_mask)
+        raio_x = int(largura * 0.28)
+        raio_y = int(altura * 0.43)
+        centro_x = int(largura * 0.78)
+        centro_y = int(altura * 0.42)
+        glow_draw.ellipse(
+            (
+                centro_x - raio_x,
+                centro_y - raio_y,
+                centro_x + raio_x,
+                centro_y + raio_y,
+            ),
+            fill=58,
+        )
+        glow_mask = glow_mask.filter(
+            ImageFilter.GaussianBlur(max(80, int(largura * 0.08)))
+        )
+        glow = Image.new("RGBA", imagem.size, (*cor_tema, 0))
+        glow.putalpha(glow_mask)
+        imagem = Image.alpha_composite(imagem, glow)
+
+        # Gradiente lateral: informações entram na própria arte, sem painel.
+        mascara_lateral = Image.new("L", (largura, 1))
+        pixels = []
+        fim_forte = 0.18
+        fim_gradiente = 0.72
+
+        for px in range(largura):
+            pos = px / max(1, largura - 1)
+            if pos <= fim_forte:
+                alpha = 238
+            elif pos >= fim_gradiente:
+                alpha = 0
+            else:
+                progresso = (pos - fim_forte) / (fim_gradiente - fim_forte)
+                alpha = int(238 * ((1 - progresso) ** 1.65))
+            pixels.append(alpha)
+
+        mascara_lateral.putdata(pixels)
+        mascara_lateral = mascara_lateral.resize((largura, altura))
+        lateral = Image.new("RGBA", imagem.size, (5, 7, 10, 0))
+        lateral.putalpha(mascara_lateral)
+        imagem = Image.alpha_composite(imagem, lateral)
+
+        # Vinheta superior/inferior para acabamento cinematográfico.
+        vinheta = Image.new("L", (1, altura))
+        pixels_v = []
+        for py in range(altura):
+            pos = py / max(1, altura - 1)
+            topo = max(0.0, 1.0 - pos / 0.17)
+            base = max(0.0, (pos - 0.72) / 0.28)
+            alpha = int(min(150, topo * 72 + base * 150))
+            pixels_v.append(alpha)
+
+        vinheta.putdata(pixels_v)
+        vinheta = vinheta.resize((largura, altura))
+        camada_v = Image.new("RGBA", imagem.size, (3, 4, 6, 0))
+        camada_v.putalpha(vinheta)
+        imagem = Image.alpha_composite(imagem, camada_v)
+
+        return imagem.convert("RGB")
+
+    def aplicar_background(self, imagem):
+        self.background_photo = ImageTk.PhotoImage(imagem)
+
+        if self.background_item is None:
+            self.background_item = self.canvas.create_image(
+                0,
+                0,
+                image=self.background_photo,
+                anchor="nw",
+                tags="background",
+            )
+            self.canvas.tag_lower("background")
+        else:
+            self.canvas.itemconfigure(
+                self.background_item,
+                image=self.background_photo,
+            )
+            self.canvas.coords(self.background_item, 0, 0)
+
+    def animar_troca_background(self, imagem_nova):
         self.animacao_id += 1
         animacao_atual = self.animacao_id
 
-        if self.imagem_pil_atual is None:
-            self.aplicar_imagem(imagem_nova)
+        if (
+            self.imagem_pil_atual is None
+            or self.imagem_pil_atual.size != imagem_nova.size
+        ):
+            self.aplicar_background(imagem_nova)
             self.imagem_pil_atual = imagem_nova
             return
 
-        imagem_anterior = self.imagem_pil_atual
+        anterior = self.imagem_pil_atual.copy()
+        frames = 9
+        intervalo = 24
 
-        frames = 7
-        intervalo = 28
-
-        def mostrar_frame(indice):
+        def mostrar(indice):
             if animacao_atual != self.animacao_id:
                 return
 
             fator = indice / frames
-
-            frame = Image.blend(
-                imagem_anterior,
-                imagem_nova,
-                fator
-            )
-            self.aplicar_imagem(frame)
+            frame = Image.blend(anterior, imagem_nova, fator)
+            self.aplicar_background(frame)
 
             if indice < frames:
-                self.after(
-                    intervalo,
-                    lambda: mostrar_frame(
-                        indice + 1
-                    )
-                )
+                self.after(intervalo, lambda: mostrar(indice + 1))
             else:
                 self.imagem_pil_atual = imagem_nova
 
-        mostrar_frame(1)
+        mostrar(1)
 
-    def atualizar(
-        self,
-        personagem,
-        animar=True
-    ):
-        cor_principal = personagem[
-            "tema"
-        ]["principal"]
-
-        cor_secundaria = personagem[
-            "tema"
-        ]["secundaria"]
-
-        imagem_nova = self.preparar_imagem(
-            personagem
+    @staticmethod
+    def tamanho_logo(imagem, largura_maxima, altura_maxima):
+        largura, altura = imagem.size
+        escala = min(largura_maxima / largura, altura_maxima / altura)
+        return (
+            max(1, int(largura * escala)),
+            max(1, int(altura * escala)),
         )
 
-        if animar:
-            self.animar_troca_imagem(
-                imagem_nova
-            )
-        else:
-            self.animacao_id += 1
-            self.aplicar_imagem(imagem_nova)
-            self.imagem_pil_atual = imagem_nova
+    def criar_logo_photo(self, largura_canvas):
+        largura_max = max(175, min(240, int(largura_canvas * 0.22)))
+        tamanho = self.tamanho_logo(
+            self.logo_original,
+            largura_max,
+            74,
+        )
 
-        logo = Image.open(
-            caminho_projeto(
-                personagem["logo"]
-            )
+        logo = self.logo_original.resize(
+            tamanho,
+            Image.Resampling.LANCZOS,
+        )
+        self.logo_photo = ImageTk.PhotoImage(logo)
+
+    def desenhar_conteudo(self, deslocamento_x=0):
+        self.canvas.delete("content")
+        self.canvas.delete("info")
+
+        if not self.personagem_atual:
+            return
+
+        largura, altura = self.tamanho_canvas()
+        escala = max(0.86, min(1.02, altura / 760))
+
+        esquerda = max(46, int(largura * 0.052)) + deslocamento_x
+        topo = max(24, int(altura * 0.032))
+        largura_texto = min(455, int(largura * 0.47))
+
+        cor_principal = self.personagem_atual["tema"]["principal"]
+        cor_secundaria = self.personagem_atual["tema"]["secundaria"]
+
+        self.criar_logo_photo(largura)
+        self.canvas.create_image(
+            esquerda,
+            topo,
+            image=self.logo_photo,
+            anchor="nw",
+            tags="content",
+        )
+
+        # Índice editorial do personagem.
+        numero = self.indice_atual + 1
+        self.canvas.create_text(
+            esquerda,
+            topo + 88,
+            text=f"CHARACTER FILE   {numero:02d} / {self.total_personagens:02d}",
+            anchor="nw",
+            fill="#777D86",
+            font=("Arial", max(7, int(8 * escala)), "bold"),
+            tags="content",
+        )
+        self.canvas.create_rectangle(
+            esquerda,
+            topo + 108,
+            esquerda + 34,
+            topo + 110,
+            fill=cor_secundaria,
+            outline="",
+            tags="content",
+        )
+
+        tamanho_nome = max(31, min(45, int(42 * escala)))
+        nome_y = topo + 124
+
+        # Sombra mínima para manter legibilidade sobre artes mais claras.
+        self.canvas.create_text(
+            esquerda + 2,
+            nome_y + 2,
+            text=self.personagem_atual["nome"].upper(),
+            anchor="nw",
+            fill="#050608",
+            font=("Arial", tamanho_nome, "bold"),
+            width=largura_texto,
+            justify="left",
+            tags="content",
+        )
+        nome_item = self.canvas.create_text(
+            esquerda,
+            nome_y,
+            text=self.personagem_atual["nome"].upper(),
+            anchor="nw",
+            fill=cor_principal,
+            font=("Arial", tamanho_nome, "bold"),
+            width=largura_texto,
+            justify="left",
+            tags="content",
+        )
+
+        bbox_nome = self.canvas.bbox(nome_item)
+        fim_nome = bbox_nome[3] if bbox_nome else nome_y + tamanho_nome
+
+        self.canvas.create_text(
+            esquerda,
+            fim_nome + 5,
+            text=f'“{self.personagem_atual["epiteto"]}”',
+            anchor="nw",
+            fill="#D5D8DD",
+            font=("Arial", max(10, int(11 * escala)), "italic"),
+            tags="content",
+        )
+
+        cargo_y = fim_nome + 34
+        cargo = self.personagem_atual["cargo"].upper()
+        cargo_item = self.canvas.create_text(
+            esquerda + 14,
+            cargo_y + 6,
+            text=cargo,
+            anchor="nw",
+            fill="#F7F7F8",
+            font=("Arial", max(7, int(8 * escala)), "bold"),
+            tags="content",
+        )
+        bbox_cargo = self.canvas.bbox(cargo_item)
+        cargo_largura = (bbox_cargo[2] - bbox_cargo[0]) + 28
+        self.canvas.create_rectangle(
+            esquerda,
+            cargo_y,
+            esquerda + cargo_largura,
+            cargo_y + 27,
+            fill="#11151B",
+            outline=cor_principal,
+            width=1,
+            tags="content",
+        )
+        self.canvas.tag_raise(cargo_item)
+
+        info_y = cargo_y + 52
+        self.info_panel.desenhar(
+            esquerda,
+            info_y,
+            largura_texto,
+            altura - info_y - 30,
+        )
+
+        # Marca discreta no canto inferior direito.
+        self.canvas.create_text(
+            largura - 28,
+            altura - 25,
+            text="ONE PIECE EXPLORER  /  V2",
+            anchor="se",
+            fill="#666B73",
+            font=("Arial", 8, "bold"),
+            tags="content",
+        )
+
+        # Linha de leitura vertical, dá acabamento editorial.
+        self.canvas.create_rectangle(
+            esquerda - 18,
+            nome_y + 4,
+            esquerda - 15,
+            max(nome_y + 42, fim_nome - 2),
+            fill=cor_principal,
+            outline="",
+            tags="content",
+        )
+
+    def redesenhar_conteudo(self):
+        self.desenhar_conteudo(0)
+
+    def animar_entrada_conteudo(self):
+        if self.entrada_job is not None:
+            try:
+                self.after_cancel(self.entrada_job)
+            except tk.TclError:
+                pass
+
+        passos = [18, 13, 9, 5, 2, 0]
+
+        def mostrar(indice):
+            self.desenhar_conteudo(passos[indice])
+            if indice < len(passos) - 1:
+                self.entrada_job = self.after(
+                    24,
+                    lambda: mostrar(indice + 1),
+                )
+            else:
+                self.entrada_job = None
+
+        mostrar(0)
+
+    def ao_redimensionar(self, evento=None):
+        if not self.personagem_atual:
+            return
+
+        if self.resize_job is not None:
+            try:
+                self.after_cancel(self.resize_job)
+            except tk.TclError:
+                pass
+
+        self.resize_job = self.after(120, self.atualizar_layout)
+
+    def atualizar_layout(self):
+        self.resize_job = None
+
+        if not self.personagem_atual or self.imagem_original is None:
+            return
+
+        self.animacao_id += 1
+        imagem = self.preparar_background(self.tamanho_canvas())
+        self.aplicar_background(imagem)
+        self.imagem_pil_atual = imagem
+        self.redesenhar_conteudo()
+
+    def atualizar(self, personagem, indice=0, animar=True):
+        self.personagem_atual = personagem
+        self.indice_atual = indice
+
+        self.imagem_original = Image.open(
+            caminho_projeto(personagem["imagem"])
+        ).convert("RGB")
+
+        self.logo_original = Image.open(
+            caminho_projeto(personagem["logo"])
         ).convert("RGBA")
 
-        tamanho_logo = self.tamanho_logo(
-            logo
-        )
+        self.info_panel.atualizar_personagem(personagem)
 
-        self.logo_atual = ctk.CTkImage(
-            light_image=logo,
-            dark_image=logo,
-            size=tamanho_logo
-        )
-        self.label_logo.configure(
-            image=self.logo_atual
-        )
+        imagem_nova = self.preparar_background(self.tamanho_canvas())
 
-        self.label_nome.configure(
-            text=personagem["nome"],
-            text_color=cor_principal
-        )
-        self.label_epiteto.configure(
-            text=f'“{personagem["epiteto"]}”'
-        )
-        self.badge_cargo.configure(
-            text=f'   {personagem["cargo"]}   ',
-            fg_color=cor_principal
-        )
-        self.barra_destaque.configure(
-            fg_color=cor_secundaria
-        )
-
-        self.info_panel.atualizar_personagem(
-            personagem
-        )
+        if animar:
+            self.animar_troca_background(imagem_nova)
+            self.animar_entrada_conteudo()
+        else:
+            self.animacao_id += 1
+            self.aplicar_background(imagem_nova)
+            self.imagem_pil_atual = imagem_nova
+            self.redesenhar_conteudo()
