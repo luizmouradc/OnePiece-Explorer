@@ -1,6 +1,6 @@
 # ☠️ One Piece Explorer 
 
-O **One Piece Explorer V2** é uma reconstrução do meu primeiro projeto
+O **One Piece Explorer** é uma reconstrução do meu primeiro projeto
 desenvolvido em Python. A ideia original foi mantida: explorar personagens
 dos Piratas do Chapéu de Palha por meio de uma aplicação desktop.
 
