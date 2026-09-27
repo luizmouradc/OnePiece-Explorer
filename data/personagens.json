@@ -31,6 +31,11 @@
     "tema": {
       "principal": "#D62828",
       "secundaria": "#F4C542"
+    },
+    "visual": {
+      "foco_x": 0.61,
+      "foco_y": 0.5,
+      "brilho": 0.79
     }
   },
   {
@@ -62,6 +67,11 @@
     "tema": {
       "principal": "#2E8B57",
       "secundaria": "#A7C957"
+    },
+    "visual": {
+      "foco_x": 0.59,
+      "foco_y": 0.5,
+      "brilho": 0.78
     }
   },
   {
@@ -89,6 +99,11 @@
     "tema": {
       "principal": "#1597C5",
       "secundaria": "#F28C28"
+    },
+    "visual": {
+      "foco_x": 0.61,
+      "foco_y": 0.5,
+      "brilho": 0.8
     }
   },
   {
@@ -119,6 +134,11 @@
     "tema": {
       "principal": "#D4A017",
       "secundaria": "#2C6E9E"
+    },
+    "visual": {
+      "foco_x": 0.6,
+      "foco_y": 0.5,
+      "brilho": 0.78
     }
   },
   {
@@ -149,6 +169,11 @@
     "tema": {
       "principal": "#E86DAA",
       "secundaria": "#64C5DA"
+    },
+    "visual": {
+      "foco_x": 0.6,
+      "foco_y": 0.5,
+      "brilho": 0.8
     }
   }
 ]

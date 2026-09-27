@@ -1,239 +1,161 @@
-import customtkinter as ctk
+class InfoPanel:
+    """Informações editoriais desenhadas diretamente sobre o Canvas do hero."""
 
+    ABAS = [
+        ("visao", "VISÃO GERAL"),
+        ("habilidades", "HABILIDADES"),
+        ("objetivo", "OBJETIVO"),
+        ("ficha", "FICHA"),
+    ]
 
-class InfoPanel(ctk.CTkFrame):
-    def __init__(self, master):
-        super().__init__(
-            master,
-            fg_color="transparent",
-            corner_radius=0
-        )
+    def __init__(self, canvas, ao_mudar=None):
+        self.canvas = canvas
+        self.ao_mudar = ao_mudar
 
         self.personagem = None
         self.aba_atual = "visao"
         self.cor_principal = "#D62828"
-
-        self.botoes_abas = {}
-
-        self.grid_columnconfigure(0, weight=1)
-
-        self.criar_abas()
-        self.criar_area_conteudo()
-
-    def criar_abas(self):
-        frame_abas = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
-        )
-        frame_abas.grid(
-            row=0,
-            column=0,
-            sticky="ew",
-            pady=(0, 18)
-        )
-
-        nomes = [
-            ("visao", "Visão geral"),
-            ("habilidades", "Habilidades"),
-            ("objetivo", "Objetivo"),
-            ("ficha", "Ficha")
-        ]
-
-        for indice, (chave, texto) in enumerate(nomes):
-            botao = ctk.CTkButton(
-                frame_abas,
-                text=texto,
-                height=34,
-                corner_radius=9,
-                font=ctk.CTkFont(size=12, weight="bold"),
-                fg_color="transparent",
-                hover_color="#222833",
-                border_width=1,
-                border_color="#2A313D",
-                text_color="#B7BDC7",
-                command=lambda aba=chave: self.mudar_aba(aba)
-            )
-            botao.grid(
-                row=0,
-                column=indice,
-                padx=(0 if indice == 0 else 5, 5),
-                sticky="ew"
-            )
-            frame_abas.grid_columnconfigure(indice, weight=1)
-
-            self.botoes_abas[chave] = botao
-
-    def criar_area_conteudo(self):
-        self.area_conteudo = ctk.CTkFrame(
-            self,
-            fg_color="#10131A",
-            corner_radius=14,
-            border_width=1,
-            border_color="#232A35"
-        )
-        self.area_conteudo.grid(
-            row=1,
-            column=0,
-            sticky="nsew"
-        )
-
-        self.grid_rowconfigure(1, weight=1)
-
-        self.label_titulo = ctk.CTkLabel(
-            self.area_conteudo,
-            text="",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#747D8A",
-            anchor="w"
-        )
-        self.label_titulo.pack(
-            fill="x",
-            padx=20,
-            pady=(18, 7)
-        )
-
-        self.label_texto = ctk.CTkLabel(
-            self.area_conteudo,
-            text="",
-            font=ctk.CTkFont(size=14),
-            text_color="#D7DBE2",
-            justify="left",
-            anchor="nw",
-            wraplength=350
-        )
-        self.label_texto.pack(
-            fill="x",
-            padx=20,
-            pady=(0, 18)
-        )
-
-        self.frame_ficha = ctk.CTkFrame(
-            self.area_conteudo,
-            fg_color="transparent"
-        )
+        self.cor_secundaria = "#F4C542"
 
     def atualizar_personagem(self, personagem):
         self.personagem = personagem
         self.cor_principal = personagem["tema"]["principal"]
-
-        self.mudar_aba(self.aba_atual)
+        self.cor_secundaria = personagem["tema"]["secundaria"]
 
     def mudar_aba(self, aba):
+        if aba == self.aba_atual:
+            return
+
         self.aba_atual = aba
-        self.atualizar_estado_abas()
+        if self.ao_mudar:
+            self.ao_mudar()
+
+    def desenhar(self, x, y, largura, altura):
+        self.canvas.delete("info")
 
         if not self.personagem:
             return
 
-        if aba == "ficha":
-            self.mostrar_ficha()
-            return
+        y_conteudo = self._desenhar_abas(x, y, largura)
 
-        self.frame_ficha.pack_forget()
-        self.label_titulo.pack(
-            fill="x",
-            padx=20,
-            pady=(18, 7)
-        )
-        self.label_texto.pack(
-            fill="x",
-            padx=20,
-            pady=(0, 18)
-        )
-
-        if aba == "visao":
-            titulo = "VISÃO GERAL"
-            texto = self.personagem["descricao"]
-
-        elif aba == "habilidades":
-            titulo = "HABILIDADES"
-            texto = self.personagem["habilidades"]
-
+        if self.aba_atual == "ficha":
+            self._desenhar_ficha(
+                x,
+                y_conteudo + 20,
+                largura,
+                altura - (y_conteudo - y) - 20,
+            )
         else:
-            titulo = "OBJETIVO"
-            texto = self.personagem["objetivo"]
+            self._desenhar_texto(
+                x,
+                y_conteudo + 22,
+                largura,
+            )
 
-        self.label_titulo.configure(text=titulo)
-        self.label_texto.configure(text=texto)
+    def _desenhar_abas(self, x, y, largura):
+        espacamento = 22
+        pos_x = x
 
-    def atualizar_estado_abas(self):
-        for chave, botao in self.botoes_abas.items():
-            if chave == self.aba_atual:
-                botao.configure(
-                    fg_color=self.cor_principal,
-                    border_color=self.cor_principal,
-                    text_color="#FFFFFF"
+        for chave, texto in self.ABAS:
+            ativa = chave == self.aba_atual
+            cor = self.cor_principal if ativa else "#9096A0"
+            fonte = ("Arial", 9, "bold")
+
+            item = self.canvas.create_text(
+                pos_x,
+                y,
+                text=texto,
+                anchor="nw",
+                fill=cor,
+                font=fonte,
+                tags=("info", f"aba_{chave}"),
+            )
+
+            caixa = self.canvas.bbox(item)
+            largura_texto = caixa[2] - caixa[0]
+
+            if ativa:
+                self.canvas.create_rectangle(
+                    pos_x,
+                    y + 20,
+                    pos_x + largura_texto,
+                    y + 22,
+                    fill=self.cor_principal,
+                    outline="",
+                    tags="info",
                 )
-            else:
-                botao.configure(
-                    fg_color="transparent",
-                    border_color="#2A313D",
-                    text_color="#B7BDC7"
-                )
 
-    def limpar_ficha(self):
-        for widget in self.frame_ficha.winfo_children():
-            widget.destroy()
+            self.canvas.tag_bind(
+                f"aba_{chave}",
+                "<Button-1>",
+                lambda evento, aba=chave: self.mudar_aba(aba),
+            )
+            self.canvas.tag_bind(
+                f"aba_{chave}",
+                "<Enter>",
+                lambda evento: self.canvas.configure(cursor="hand2"),
+            )
+            self.canvas.tag_bind(
+                f"aba_{chave}",
+                "<Leave>",
+                lambda evento: self.canvas.configure(cursor=""),
+            )
 
-    def criar_card(self, master, titulo, valor, linha, coluna):
-        card = ctk.CTkFrame(
-            master,
-            fg_color="#171B23",
-            corner_radius=12,
-            border_width=1,
-            border_color="#272E39"
-        )
-        card.grid(
-            row=linha,
-            column=coluna,
-            sticky="nsew",
-            padx=5,
-            pady=5
-        )
+            pos_x += largura_texto + espacamento
 
-        master.grid_columnconfigure(coluna, weight=1)
-
-        label_titulo = ctk.CTkLabel(
-            card,
-            text=titulo.upper(),
-            font=ctk.CTkFont(size=10, weight="bold"),
-            text_color="#777F8C",
-            anchor="w"
-        )
-        label_titulo.pack(
-            fill="x",
-            padx=14,
-            pady=(12, 4)
+        self.canvas.create_line(
+            x,
+            y + 30,
+            x + min(largura, 445),
+            y + 30,
+            fill="#30343B",
+            width=1,
+            tags="info",
         )
 
-        label_valor = ctk.CTkLabel(
-            card,
-            text=valor,
-            font=ctk.CTkFont(size=13, weight="bold"),
-            text_color="#F1F3F5",
-            anchor="w",
+        return y + 30
+
+    def _desenhar_texto(self, x, y, largura):
+        dados = {
+            "visao": (
+                "SOBRE O PERSONAGEM",
+                self.personagem["descricao"],
+            ),
+            "habilidades": (
+                "ESTILO DE COMBATE",
+                self.personagem["habilidades"],
+            ),
+            "objetivo": (
+                "SONHO / OBJETIVO",
+                self.personagem["objetivo"],
+            ),
+        }
+
+        titulo, texto = dados[self.aba_atual]
+
+        self.canvas.create_text(
+            x,
+            y,
+            text=titulo,
+            anchor="nw",
+            fill="#747A84",
+            font=("Arial", 8, "bold"),
+            tags="info",
+        )
+
+        self.canvas.create_text(
+            x,
+            y + 23,
+            text=texto,
+            anchor="nw",
+            fill="#ECEEF1",
+            font=("Arial", 13),
+            width=min(largura, 450),
             justify="left",
-            wraplength=155
-        )
-        label_valor.pack(
-            fill="x",
-            padx=14,
-            pady=(0, 12)
+            tags="info",
         )
 
-    def mostrar_ficha(self):
-        self.label_titulo.pack_forget()
-        self.label_texto.pack_forget()
-
-        self.limpar_ficha()
-
-        self.frame_ficha.pack(
-            fill="both",
-            expand=True,
-            padx=14,
-            pady=14
-        )
-
+    def _desenhar_ficha(self, x, y, largura, altura):
         recompensa = self.personagem["recompensa"]["exibicao"]
         origem = self.personagem["origem"]
         aniversario = self.personagem["aniversario"]
@@ -247,38 +169,70 @@ class InfoPanel(ctk.CTkFrame):
         tipos_haki = self.personagem["haki"]["tipos"]
         haki = ", ".join(tipos_haki) if tipos_haki else "Não confirmado"
 
-        self.criar_card(
-            self.frame_ficha,
-            "Recompensa",
-            recompensa,
-            0,
-            0
-        )
-        self.criar_card(
-            self.frame_ficha,
-            "Origem",
-            origem,
-            0,
-            1
-        )
-        self.criar_card(
-            self.frame_ficha,
-            "Aniversário",
-            aniversario,
-            1,
-            0
-        )
-        self.criar_card(
-            self.frame_ficha,
-            "Akuma no Mi",
-            fruta,
-            1,
-            1
-        )
-        self.criar_card(
-            self.frame_ficha,
-            "Haki",
+        itens = [
+            ("RECOMPENSA", recompensa),
+            ("ORIGEM", origem),
+            ("ANIVERSÁRIO", aniversario),
+            ("AKUMA NO MI", fruta),
+        ]
+
+        largura_total = min(largura, 450)
+        gap = 24
+        largura_coluna = (largura_total - gap) / 2
+        altura_linha = 73
+
+        for indice, (titulo, valor) in enumerate(itens):
+            linha = indice // 2
+            coluna = indice % 2
+            px = x + coluna * (largura_coluna + gap)
+            py = y + linha * altura_linha
+
+            self._desenhar_campo(
+                px,
+                py,
+                largura_coluna,
+                titulo,
+                valor,
+            )
+
+        y_haki = y + (2 * altura_linha)
+        self._desenhar_campo(
+            x,
+            y_haki,
+            largura_total,
+            "HAKI",
             haki,
-            2,
-            0
+        )
+
+    def _desenhar_campo(self, x, y, largura, titulo, valor):
+        self.canvas.create_text(
+            x,
+            y,
+            text=titulo,
+            anchor="nw",
+            fill="#747A84",
+            font=("Arial", 8, "bold"),
+            tags="info",
+        )
+
+        self.canvas.create_text(
+            x,
+            y + 17,
+            text=valor,
+            anchor="nw",
+            fill="#F4F5F7",
+            font=("Arial", 11, "bold"),
+            width=largura,
+            justify="left",
+            tags="info",
+        )
+
+        self.canvas.create_line(
+            x,
+            y + 56,
+            x + largura,
+            y + 56,
+            fill="#30343B",
+            width=1,
+            tags="info",
         )
