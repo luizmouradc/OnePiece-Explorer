@@ -1,4 +1,5 @@
 import json
+import random
 
 import customtkinter as ctk
 
@@ -28,7 +29,8 @@ class OnePieceExplorer(ctk.CTk):
         self.sidebar = Sidebar(
             self,
             self.personagens,
-            self.exibir_personagem
+            self.exibir_personagem,
+            self.sortear_personagem
         )
         self.sidebar.grid(
             row=0,
@@ -44,15 +46,53 @@ class OnePieceExplorer(ctk.CTk):
         )
 
         if self.personagens:
-            self.exibir_personagem(self.personagens[0])
+            self.exibir_personagem(
+                self.personagens[0],
+                animar=False
+            )
 
     def carregar_personagens(self):
-        caminho_json = caminho_projeto("data/personagens.json")
+        caminho_json = caminho_projeto(
+            "data/personagens.json"
+        )
 
-        with caminho_json.open("r", encoding="utf-8") as arquivo:
+        with caminho_json.open(
+            "r",
+            encoding="utf-8"
+        ) as arquivo:
             return json.load(arquivo)
 
-    def exibir_personagem(self, personagem):
+    def exibir_personagem(
+        self,
+        personagem,
+        animar=True
+    ):
+        if (
+            self.personagem_atual
+            and personagem["id"]
+            == self.personagem_atual["id"]
+        ):
+            return
+
         self.personagem_atual = personagem
+
         self.sidebar.destacar(personagem)
-        self.personagem_view.atualizar(personagem)
+        self.personagem_view.atualizar(
+            personagem,
+            animar=animar
+        )
+
+    def sortear_personagem(self):
+        if len(self.personagens) <= 1:
+            return
+
+        opcoes = [
+            personagem
+            for personagem in self.personagens
+            if not self.personagem_atual
+            or personagem["id"]
+            != self.personagem_atual["id"]
+        ]
+
+        sorteado = random.choice(opcoes)
+        self.exibir_personagem(sorteado)
