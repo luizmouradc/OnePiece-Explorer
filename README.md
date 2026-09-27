@@ -3,20 +3,24 @@
 Reconstrução do primeiro projeto em Python/Tkinter, agora usando CustomTkinter,
 organização modular e dados externos em JSON.
 
-## Etapa atual — Abas e ficha
+## Etapa atual — Interação e refinamento visual
 
-A Etapa 4 adiciona a navegação de informações de cada personagem:
+A Etapa 5 adiciona:
 
-- aba `Visão geral`;
-- aba `Habilidades`;
-- aba `Objetivo`;
-- aba `Ficha`;
-- cards com recompensa, origem, aniversário, Akuma no Mi e Haki;
-- destaque das abas usando a cor temática do personagem;
-- novo componente `ui/info_panel.py`.
+- botão `Surpreenda-me` para escolher um personagem aleatório;
+- o sorteio evita repetir o personagem atual;
+- transição suave entre as imagens dos personagens;
+- melhor tratamento da proporção das imagens com `ImageOps.fit`;
+- leve ajuste de brilho para integrar as artes ao tema escuro;
+- refinamentos de espaçamento e rodapé da sidebar.
 
-A troca de personagem continua atualizando imagem, logo, cores e todos os dados
-do painel automaticamente.
+Continuam disponíveis:
+
+- sidebar com caveiras;
+- tema individual por personagem;
+- logo, nome, epíteto e cargo;
+- abas `Visão geral`, `Habilidades`, `Objetivo` e `Ficha`;
+- cards com informações do personagem.
 
 ## Como executar
 
@@ -25,22 +29,8 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## Estrutura principal
+## Próxima etapa
 
-```text
-OnePiece-Explorer-V2/
-├── main.py
-├── data/
-│   └── personagens.json
-├── ui/
-│   ├── app.py
-│   ├── sidebar.py
-│   ├── personagem_view.py
-│   └── info_panel.py
-├── utils/
-│   └── caminhos.py
-└── assets/
-    ├── personagens/
-    ├── logos/
-    └── icones/
-```
+A próxima etapa será o acabamento final da V2:
+revisão visual, pequenos ajustes de responsividade,
+README de portfólio e preparação da versão final.

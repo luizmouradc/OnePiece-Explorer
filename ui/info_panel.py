@@ -99,7 +99,7 @@ class InfoPanel(ctk.CTkFrame):
             text_color="#D7DBE2",
             justify="left",
             anchor="nw",
-            wraplength=360
+            wraplength=350
         )
         self.label_texto.pack(
             fill="x",

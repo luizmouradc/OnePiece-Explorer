@@ -1,11 +1,13 @@
 import customtkinter as ctk
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageOps
 
 from ui.info_panel import InfoPanel
 from utils.caminhos import caminho_projeto
 
 
 class PersonagemView(ctk.CTkFrame):
+    TAMANHO_IMAGEM = (665, 416)
+
     def __init__(self, master):
         super().__init__(
             master,
@@ -15,6 +17,8 @@ class PersonagemView(ctk.CTkFrame):
 
         self.imagem_principal = None
         self.logo_atual = None
+        self.imagem_pil_atual = None
+        self.animacao_id = 0
 
         self.grid_columnconfigure(0, weight=3)
         self.grid_columnconfigure(1, weight=2)
@@ -66,8 +70,14 @@ class PersonagemView(ctk.CTkFrame):
             pady=26
         )
 
-        self.frame_info.grid_columnconfigure(0, weight=1)
-        self.frame_info.grid_rowconfigure(6, weight=1)
+        self.frame_info.grid_columnconfigure(
+            0,
+            weight=1
+        )
+        self.frame_info.grid_rowconfigure(
+            6,
+            weight=1
+        )
 
         self.label_logo = ctk.CTkLabel(
             self.frame_info,
@@ -100,7 +110,10 @@ class PersonagemView(ctk.CTkFrame):
         self.label_nome = ctk.CTkLabel(
             self.frame_info,
             text="",
-            font=ctk.CTkFont(size=32, weight="bold"),
+            font=ctk.CTkFont(
+                size=32,
+                weight="bold"
+            ),
             text_color="#FFFFFF",
             anchor="w",
             justify="left"
@@ -133,7 +146,10 @@ class PersonagemView(ctk.CTkFrame):
             text="",
             height=32,
             corner_radius=9,
-            font=ctk.CTkFont(size=13, weight="bold"),
+            font=ctk.CTkFont(
+                size=13,
+                weight="bold"
+            ),
             text_color="#FFFFFF",
             anchor="w"
         )
@@ -145,7 +161,9 @@ class PersonagemView(ctk.CTkFrame):
             pady=(0, 18)
         )
 
-        self.info_panel = InfoPanel(self.frame_info)
+        self.info_panel = InfoPanel(
+            self.frame_info
+        )
         self.info_panel.grid(
             row=5,
             column=0,
@@ -169,7 +187,11 @@ class PersonagemView(ctk.CTkFrame):
         )
 
     @staticmethod
-    def tamanho_logo(imagem, largura_maxima=300, altura_maxima=110):
+    def tamanho_logo(
+        imagem,
+        largura_maxima=300,
+        altura_maxima=110
+    ):
         largura, altura = imagem.size
 
         escala = min(
@@ -182,28 +204,113 @@ class PersonagemView(ctk.CTkFrame):
             max(1, int(altura * escala))
         )
 
-    def atualizar(self, personagem):
-        cor_principal = personagem["tema"]["principal"]
-        cor_secundaria = personagem["tema"]["secundaria"]
-
+    def preparar_imagem(self, personagem):
         imagem = Image.open(
-            caminho_projeto(personagem["imagem"])
+            caminho_projeto(
+                personagem["imagem"]
+            )
         ).convert("RGB")
 
+        imagem = ImageOps.fit(
+            imagem,
+            self.TAMANHO_IMAGEM,
+            method=Image.Resampling.LANCZOS,
+            centering=(0.5, 0.5)
+        )
+
+        # Um leve escurecimento deixa o visual menos estourado
+        # e combina melhor com o tema da interface.
+        return ImageEnhance.Brightness(
+            imagem
+        ).enhance(0.94)
+
+    def aplicar_imagem(self, imagem):
         self.imagem_principal = ctk.CTkImage(
             light_image=imagem,
             dark_image=imagem,
-            size=(665, 416)
+            size=self.TAMANHO_IMAGEM
         )
         self.label_imagem.configure(
             image=self.imagem_principal
         )
 
+    def animar_troca_imagem(
+        self,
+        imagem_nova
+    ):
+        self.animacao_id += 1
+        animacao_atual = self.animacao_id
+
+        if self.imagem_pil_atual is None:
+            self.aplicar_imagem(imagem_nova)
+            self.imagem_pil_atual = imagem_nova
+            return
+
+        imagem_anterior = self.imagem_pil_atual
+
+        frames = 7
+        intervalo = 28
+
+        def mostrar_frame(indice):
+            if animacao_atual != self.animacao_id:
+                return
+
+            fator = indice / frames
+
+            frame = Image.blend(
+                imagem_anterior,
+                imagem_nova,
+                fator
+            )
+            self.aplicar_imagem(frame)
+
+            if indice < frames:
+                self.after(
+                    intervalo,
+                    lambda: mostrar_frame(
+                        indice + 1
+                    )
+                )
+            else:
+                self.imagem_pil_atual = imagem_nova
+
+        mostrar_frame(1)
+
+    def atualizar(
+        self,
+        personagem,
+        animar=True
+    ):
+        cor_principal = personagem[
+            "tema"
+        ]["principal"]
+
+        cor_secundaria = personagem[
+            "tema"
+        ]["secundaria"]
+
+        imagem_nova = self.preparar_imagem(
+            personagem
+        )
+
+        if animar:
+            self.animar_troca_imagem(
+                imagem_nova
+            )
+        else:
+            self.animacao_id += 1
+            self.aplicar_imagem(imagem_nova)
+            self.imagem_pil_atual = imagem_nova
+
         logo = Image.open(
-            caminho_projeto(personagem["logo"])
+            caminho_projeto(
+                personagem["logo"]
+            )
         ).convert("RGBA")
 
-        tamanho_logo = self.tamanho_logo(logo)
+        tamanho_logo = self.tamanho_logo(
+            logo
+        )
 
         self.logo_atual = ctk.CTkImage(
             light_image=logo,
@@ -229,4 +336,6 @@ class PersonagemView(ctk.CTkFrame):
             fg_color=cor_secundaria
         )
 
-        self.info_panel.atualizar_personagem(personagem)
+        self.info_panel.atualizar_personagem(
+            personagem
+        )
