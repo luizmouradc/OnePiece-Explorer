@@ -4,8 +4,6 @@ O **One Piece Explorer** é uma reconstrução do meu primeiro projeto
 desenvolvido em Python. A ideia original foi mantida: explorar personagens
 dos Piratas do Chapéu de Palha por meio de uma aplicação desktop.
 
-A V2 refaz o projeto com uma interface mais moderna, código modular,
-dados externos em JSON e componentes reutilizáveis.
 
 ## Sobre a evolução
 
@@ -13,7 +11,7 @@ A versão original foi criada com **Tkinter + Pillow** e concentrava boa
 parte da interface em um único arquivo, com posições fixas e botões
 criados manualmente.
 
-Na V2, o projeto passou a utilizar:
+ o projeto passou a utilizar:
 
 - **CustomTkinter** para a interface;
 - dados dos personagens em **JSON**;
