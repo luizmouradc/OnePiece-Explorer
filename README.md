@@ -1,4 +1,4 @@
-# ☠️ One Piece Explorer V2
+# ☠️ One Piece Explorer 
 
 O **One Piece Explorer V2** é uma reconstrução do meu primeiro projeto
 desenvolvido em Python. A ideia original foi mantida: explorar personagens
