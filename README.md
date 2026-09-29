@@ -59,7 +59,7 @@ A versão original continua preservada na pasta `original/`, permitindo acompanh
 
 <div align="center">
 
-<img src="https://skillicons.dev/icons?i=python,json,git,github,vscode&theme=dark"/>
+<img src="https://skillicons.dev/icons?i=python,git,github,vscode&theme=dark"/>
 
 </div>
 
@@ -110,33 +110,27 @@ OnePiece-Explorer-V2/
 
 <div align="center">
 
-### Luffy
+As imagens de demonstração da aplicação serão adicionadas em breve.
 
-<!-- Adicione aqui a imagem do Luffy -->
+<br>
+
+### Luffy
 
 <br>
 
 ### Zoro
 
-<!-- Adicione aqui a imagem do Zoro -->
-
 <br>
 
 ### Nami
-
-<!-- Adicione aqui a imagem da Nami -->
 
 <br>
 
 ### Sanji
 
-<!-- Adicione aqui a imagem do Sanji -->
-
 <br>
 
 ### Chopper
-
-<!-- Adicione aqui a imagem do Chopper -->
 
 </div>
 
