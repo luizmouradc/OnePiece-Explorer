@@ -1,43 +1,49 @@
-# ☠️ One Piece Explorer 
+<div align="center">
 
-O **One Piece Explorer** é uma reconstrução do meu primeiro projeto
-desenvolvido em Python. A ideia original foi mantida: explorar personagens
-dos Piratas do Chapéu de Palha por meio de uma aplicação desktop.
+# One Piece Explorer
 
+Uma aplicação desktop para explorar os personagens dos Piratas do Chapéu de Palha, reconstruída a partir do meu primeiro projeto desenvolvido em Python.
 
-## Sobre a evolução
+<br>
 
-A versão original foi criada com **Tkinter + Pillow** e concentrava boa
-parte da interface em um único arquivo, com posições fixas e botões
-criados manualmente.
+</div>
 
- o projeto passou a utilizar:
+---
 
-- **CustomTkinter** para a interface;
-- dados dos personagens em **JSON**;
-- componentes separados para sidebar, personagem e informações;
-- geração dinâmica dos personagens;
-- temas de cores individuais;
-- tratamento centralizado dos caminhos dos arquivos;
-- transições e redimensionamento das imagens.
+## Sobre o projeto
 
-A versão original continua preservada na pasta `original/`.
+O **One Piece Explorer** é uma reconstrução do meu primeiro projeto desenvolvido em Python.
+
+A ideia original foi mantida: criar uma aplicação desktop para explorar personagens dos Piratas do Chapéu de Palha, apresentando informações, habilidades, objetivos e características de cada personagem.
+
+A primeira versão foi desenvolvida utilizando **Tkinter + Pillow**, com grande parte da interface concentrada em poucos arquivos, posições fixas e elementos criados manualmente.
+
+Nesta nova versão, o projeto foi reorganizado utilizando **CustomTkinter**, separação de componentes, dados armazenados em JSON e geração dinâmica da interface.
+
+A versão original continua preservada na pasta `original/`, permitindo acompanhar a evolução do projeto.
+
+---
 
 ## Funcionalidades
 
-- seleção entre Luffy, Zoro, Nami, Sanji e Chopper;
-- sidebar com os Jolly Rogers dos personagens;
-- hero cinematográfico com a arte do personagem ocupando toda a área principal;
-- overlay em gradiente integrado à imagem para manter os textos legíveis sem criar um painel separado;
-- imagem, logo e identidade visual próprios para cada personagem;
-- abas de **Visão geral**, **Habilidades**, **Objetivo** e **Ficha**;
-- ficha com recompensa, origem, aniversário, Akuma no Mi e Haki;
-- botão **Surpreenda-me** para escolher outro personagem aleatoriamente;
-- transição suave em fade entre os heroes dos personagens;
-- enquadramento individual de cada arte por meio de parâmetros de foco no JSON;
-- abas editoriais sobrepostas à composição principal;
-- redimensionamento da arte principal de acordo com a janela;
-- atalhos de teclado para navegação.
+- Seleção entre Luffy, Zoro, Nami, Sanji e Chopper
+- Sidebar com os Jolly Rogers dos personagens
+- Arte principal ocupando toda a área de destaque
+- Identidade visual personalizada para cada personagem
+- Imagem, logo e cores individuais
+- Abas de Visão geral, Habilidades, Objetivo e Ficha
+- Informações sobre recompensa, origem, aniversário, Akuma no Mi e Haki
+- Botão Surpreenda-me para escolher um personagem aleatoriamente
+- Navegação entre personagens por teclado
+- Transição suave entre os personagens
+- Redimensionamento automático das imagens de acordo com a janela
+- Enquadramento personalizado das artes utilizando parâmetros definidos no JSON
+- Geração dinâmica dos personagens a partir dos dados cadastrados
+- Organização dos dados dos personagens em arquivo JSON
+- Tratamento centralizado dos caminhos dos arquivos
+- Separação da interface em diferentes componentes
+
+---
 
 ## Atalhos
 
@@ -47,40 +53,108 @@ A versão original continua preservada na pasta `original/`.
 | `←` / `→` | Navegar entre os personagens |
 | `R` | Escolher um personagem aleatório |
 
-## Tecnologias
+---
 
-- Python
-- CustomTkinter
-- Pillow
-- JSON
+## Tecnologias utilizadas
 
-## Estrutura
+<div align="center">
+
+<img src="https://skillicons.dev/icons?i=python,json,git,github,vscode&theme=dark"/>
+
+</div>
+
+<br>
+
+Outras ferramentas e recursos utilizados no projeto:
+
+- **CustomTkinter** para construção da interface
+- **Pillow** para manipulação e redimensionamento das imagens
+- **JSON** para armazenamento dos dados dos personagens
+- **Tkinter** utilizado na versão original do projeto
+
+---
+
+## Estrutura do projeto
 
 ```text
 OnePiece-Explorer-V2/
-├── main.py
-├── requirements.txt
+├── assets/
+│   ├── personagens/
+│   ├── logos/
+│   └── icones/
+│
 ├── data/
 │   └── personagens.json
+│
+├── original/
+│   ├── main.py
+│   └── dados.py
+│
 ├── ui/
 │   ├── app.py
 │   ├── sidebar.py
 │   ├── personagem_view.py
 │   └── info_panel.py
+│
 ├── utils/
 │   └── caminhos.py
-├── assets/
-│   ├── personagens/
-│   ├── logos/
-│   └── icones/
-└── original/
-    ├── main.py
-    └── dados.py
+│
+├── main.py
+├── requirements.txt
+└── README.md
 ```
+
+---
+
+## Demonstração
+
+<div align="center">
+
+### Luffy
+
+<!-- Adicione aqui a imagem do Luffy -->
+
+<br>
+
+### Zoro
+
+<!-- Adicione aqui a imagem do Zoro -->
+
+<br>
+
+### Nami
+
+<!-- Adicione aqui a imagem da Nami -->
+
+<br>
+
+### Sanji
+
+<!-- Adicione aqui a imagem do Sanji -->
+
+<br>
+
+### Chopper
+
+<!-- Adicione aqui a imagem do Chopper -->
+
+</div>
+
+---
 
 ## Como executar
 
-Clone o repositório e entre na pasta do projeto.
+Clone o repositório:
+
+```bash
+git clone URL_DO_REPOSITORIO
+```
+
+Entre na pasta do projeto:
+
+```bash
+cd OnePiece-Explorer-V2
+```
 
 Instale as dependências:
 
@@ -88,32 +162,47 @@ Instale as dependências:
 python -m pip install -r requirements.txt
 ```
 
-Execute:
+Execute a aplicação:
 
 ```bash
 python main.py
 ```
 
+---
+
 ## Como adicionar um novo personagem
 
-A interface é gerada a partir de `data/personagens.json`.
+A interface é gerada a partir das informações presentes no arquivo `data/personagens.json`.
 
-Para adicionar outro personagem:
+Para adicionar um novo personagem:
 
-1. adicione sua imagem em `assets/personagens/`;
-2. adicione o logo em `assets/logos/`;
-3. adicione o ícone em `assets/icones/`;
-4. cadastre os dados no `personagens.json`.
+1. Adicione a imagem do personagem em `assets/personagens/`
+2. Adicione o logo em `assets/logos/`
+3. Adicione o ícone em `assets/icones/`
+4. Cadastre as informações do personagem no arquivo `personagens.json`
 
-Não é necessário criar manualmente um novo botão na interface.
+Os elementos da interface são gerados dinamicamente, portanto não é necessário criar manualmente um novo botão para o personagem.
 
-## Versão
+---
 
-**V2.0**
+## Versão original
 
-Esta versão representa a reconstrução completa do projeto original, com uma interface cinematográfica pensada para valorizar as artes dos personagens.
+A primeira versão do **One Piece Explorer** foi desenvolvida utilizando **Tkinter + Pillow** e está preservada na pasta `original/`.
+
+A versão atual representa uma reconstrução do projeto, com melhorias na organização do código, estrutura da interface, gerenciamento dos dados, responsividade dos elementos e experiência visual.
+
+---
 
 ## Observação
 
-Projeto desenvolvido para fins educacionais e de portfólio.
-One Piece e seus personagens pertencem aos respectivos detentores de direitos.
+Este projeto foi desenvolvido para fins educacionais e de portfólio.
+
+**One Piece** e seus personagens pertencem aos seus respectivos detentores de direitos.
+
+---
+
+<div align="center">
+
+Feito por <a href="https://github.com/luizmouradc">Luiz Inácio</a>
+
+</div>
