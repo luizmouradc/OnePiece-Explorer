@@ -348,7 +348,7 @@ class PersonagemView(ctk.CTkFrame):
         self.canvas.create_text(
             largura - 28,
             altura - 25,
-            text="ONE PIECE EXPLORER  /  V2",
+            text="ONE PIECE EXPLORER",
             anchor="se",
             fill="#666B73",
             font=("Arial", 8, "bold"),

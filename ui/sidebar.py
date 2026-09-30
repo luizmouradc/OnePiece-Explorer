@@ -60,7 +60,7 @@ class Sidebar(ctk.CTkFrame):
     def criar_cabecalho(self):
         etiqueta = ctk.CTkLabel(
             self,
-            text="GRAND LINE  /  DATABASE",
+            text="GRAND LINE ",
             font=ctk.CTkFont(size=8, weight="bold"),
             text_color="#626A75",
         )
@@ -88,14 +88,14 @@ class Sidebar(ctk.CTkFrame):
 
         ctk.CTkLabel(
             meta,
-            text="CHARACTER ARCHIVE",
+            text="",
             font=ctk.CTkFont(size=8),
             text_color="#69717C",
         ).pack(side="left")
 
         ctk.CTkLabel(
             meta,
-            text="V2.0",
+            text="",
             font=ctk.CTkFont(size=8, weight="bold"),
             text_color="#8A919B",
         ).pack(side="right")
@@ -283,7 +283,7 @@ class Sidebar(ctk.CTkFrame):
     def criar_rodape(self):
         self.botao_aleatorio = ctk.CTkButton(
             self,
-            text="✦  SURPREENDA-ME   ·   R",
+            text="  SURPREENDA-ME   ·   R",
             height=41,
             corner_radius=9,
             font=ctk.CTkFont(size=10, weight="bold"),
@@ -303,7 +303,7 @@ class Sidebar(ctk.CTkFrame):
 
         atalhos = ctk.CTkLabel(
             self,
-            text="← → navegar   ·   1–5 selecionar\nR aleatório",
+            text="← → navegar  ",
             font=ctk.CTkFont(size=8),
             text_color="#545C67",
             justify="left",
